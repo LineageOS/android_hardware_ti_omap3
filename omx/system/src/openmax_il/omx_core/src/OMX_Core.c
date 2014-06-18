@@ -125,6 +125,7 @@ char *tComponentName[MAXCOMP][3] = {
 
     /* Audio components */
     {"OMX.TI.MP3.decode", "audio_decoder.mp3", MAX_CONCURRENT_INSTANCES},
+    {"OMX.ITTIAM.MP3.decode", "audio_decoder.mp3", MAX_CONCURRENT_INSTANCES},
     {"OMX.TI.AAC.encode", "audio_encoder.aac", MAX_CONCURRENT_INSTANCES},
     {"OMX.TI.AAC.decode", "audio_decoder.aac", MAX_CONCURRENT_INSTANCES},
     {"OMX.ITTIAM.AAC.decode", "audio_decoder.aac", MAX_CONCURRENT_INSTANCES},
