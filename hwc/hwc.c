@@ -1610,7 +1610,7 @@ static void *omap3_hwc_hdmi_thread(void *data)
     omap3_hwc_device_t *hwc_dev = data;
     static char uevent_desc[4096];
     struct pollfd fds[2];
-    int prev_force_sgx = 0;
+    int invalidate = 0;
     int timeout = -1;
     int err;
 
@@ -1629,19 +1629,20 @@ static void *omap3_hwc_hdmi_thread(void *data)
         err = poll(fds, hwc_dev->idle ? 2 : 1, timeout);
 
         if (err == 0) {
-            if (hwc_dev->idle) {
+            if (hwc_dev->idle && hwc_dev->procs && hwc_dev->procs->invalidate) {
                 pthread_mutex_lock(&hwc_dev->lock);
-                prev_force_sgx = hwc_dev->force_sgx;
-                hwc_dev->force_sgx = 2;
+                invalidate = !hwc_dev->force_sgx && hwc_dev->ovls_blending;
+                if (invalidate)
+                    hwc_dev->force_sgx = 2;
                 pthread_mutex_unlock(&hwc_dev->lock);
 
-                if (!prev_force_sgx && hwc_dev->procs && hwc_dev->procs->invalidate) {
+                if (invalidate) {
                     hwc_dev->procs->invalidate(hwc_dev->procs);
                     timeout = -1;
                 }
-
-                continue;
             }
+
+            continue;
         }
 
         if (err == -1) {
